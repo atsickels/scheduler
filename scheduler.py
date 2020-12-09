@@ -11,6 +11,9 @@ class Student:
         self.username = name
         self.total_time_per_week = time_week
 
+    def print_student(self):
+        print(f"{self.username} plans to study {self.total_time_per_week} hours per week")
+
     def write_to_file(self, filename):
         filename.write(f"{self.username}\n")
         filename.write(f"{self.total_time_per_week}\n")
@@ -30,6 +33,11 @@ class Course:
         self.professor_difficulty = None
         self.grading_scale = None
 
+    def print_course(self):
+        print(f"{self.course_name}: {self.course_credits} credits; {self.course_difficulty}/100 difficulty; {self.confidence}/100 confidence", end="")
+        if self.professor_name is not None:
+            print(f"{self.professor_name}; {self.professor_difficulty}/5 professor difficulty; {self.grading_scale}/100 minimum C-")
+
     def set_optional_var(self, professor, difficulty, scale):
         self.professor_name = professor
         self.professor_difficulty = difficulty
@@ -40,10 +48,9 @@ class Course:
         filename.write(f"{self.course_credits}\n")
         filename.write(f"{self.course_difficulty}\n")
         filename.write(f"{self.confidence}\n")
-        if self.professor_name is not None:
-            filename.write(f"{self.professor_name}\n")
-            filename.write(f"{self.professor_difficulty}\n")
-            filename.write(f"{self.grading_scale}\n")
+        filename.write(f"{self.professor_name}\n")
+        filename.write(f"{self.professor_difficulty}\n")
+        filename.write(f"{self.grading_scale}\n")
 
 
 
@@ -64,8 +71,6 @@ class Semester:
 
     def write_to_file(self, filename):
         filename.write(f"{self.semester_name}\n")
-        filename.write(f"{self.student}\n")
-        filename.wrote(f"{self.course_list}\n")
 
 
 class ExamProject:
@@ -111,30 +116,79 @@ def read_user_input():
         if exit_condition == "n":
             break
     semester = Semester(semester_name, me, course_list)
+    print("Data successfully saved")
     return semester
 
 def read_file_input(filename):
-    filename.readline()
+    semester_name = filename.readline()
+    fileIn = filename.readline()
+    course_list = []
+    while fileIn != "END":
+        if fileIn == "STUDENT\n":
+            given_student = Student(filename.readline(), filename.readline())
+        elif fileIn == "COURSE\n":
+            given_course = Course(filename.readline(), filename.readline(), filename.readline(), filename.readline())
+            given_course.set_optional_var(filename.readline(), filename.readline(), filename.readline())
+            course_list.append(given_course)
+        fileIn = filename.readline()
+    semester = Semester(semester_name, given_student, course_list)
+    return semester
+
+
+def write_to_file(file):
+    semester_input = read_user_input()
+    file.write("BEGIN\n")
+    file.write(f"{semester_input.semester_name}\n")
+    file.write("STUDENT\n")
+    semester_input.student.write_to_file(file)
+    file.write("ENDSTUDENT\n")
+    file.write("SCHEDULE\n")
+    for course in semester_input.course_list:
+        file.write("COURSE\n")
+        course.write_to_file(file)
+        file.write("ENDCOURSE\n")
+    file.write("ENDSCHEDULE\n")
+    # TODO the projects/exams section
+    file.write("END")
 
 def file_io():
     file = open("semester_info.txt", "r+")
     fileIn = file.readline()
     if fileIn == "BEGIN\n":
-        read_file_input(file)
+        semester = read_file_input(file)
+        print(f'Hello, {semester.student.username}'
+              f'Select an option from the list below:')
+        option_switch = input(f"a: Print this weeks schedule\n"
+                              f"b: Print student information\nc: Print all "
+                              f"courses\nd: Overwrite saved schedule\n"
+                              f"e: Delete all "
+                              f"information and exit\nq: Quit\n")
+        while option_switch != "q":
+            if option_switch == "a":
+                print("Nothing yet!")
+            elif option_switch == "b":
+                semester.student.print_student()
+            elif option_switch == "c":
+                for course in semester.course_list:
+                    course.print_course()
+            elif option_switch == "d":
+                confirmation = input(
+                    "This will permanently overwrite all saved information, are you sure? (y/n)\n")
+                if confirmation == "y":
+                    print("Not working yet!")
+                    #semester_input = read_user_input()
+                    break
+            elif option_switch == "e":
+                confirmation = input("This will permanently remove all saved information, are you sure? (y/n)\n")
+                if confirmation == "y":
+                    os.remove("semester_info.txt")
+                    break
+            elif option_switch == "q":
+                break
+            option_switch = input()
+
     else:
-        output = read_user_input()
-        file.write("BEGIN\n")
-        file.write("STUDENT\n")
-        output.student.write_to_file(file)
-        file.write("ENDSTUDENT\n")
-        file.write("SCHEDULE\n")
-        for course in output.course_list:
-            file.write("COURSE\n")
-            course.write_to_file(file)
-            file.write("ENDCOURSE\n")
-        file.write("ENDSCHEDULE\n")
-        #TODO the projects/exams section
-        file.write("END")
+        write_to_file(file)
     file.close()
 
 
