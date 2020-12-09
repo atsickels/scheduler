@@ -5,6 +5,7 @@ Austin Sickels
 
 import os.path
 
+
 class Student:
 
     def __init__(self, name, time_week):
@@ -12,7 +13,8 @@ class Student:
         self.total_time_per_week = time_week
 
     def print_student(self):
-        print(f"{self.username} plans to study {self.total_time_per_week} hours per week")
+        print(
+            f"{self.username} plans to study {self.total_time_per_week} hours per week")
 
     def write_to_file(self, filename):
         filename.write(f"{self.username}\n")
@@ -34,9 +36,12 @@ class Course:
         self.grading_scale = None
 
     def print_course(self):
-        print(f"{self.course_name}: {self.course_credits} credits; {self.course_difficulty}/100 difficulty; {self.confidence}/100 confidence", end="")
+        print(
+            f"{self.course_name}: {self.course_credits} credits; {self.course_difficulty}/100 difficulty; {self.confidence}/100 confidence",
+            end="")
         if self.professor_name is not None:
-            print(f"{self.professor_name}; {self.professor_difficulty}/5 professor difficulty; {self.grading_scale}/100 minimum C-")
+            print(
+                f"; Professor {self.professor_name}; {self.professor_difficulty}/5 professor difficulty; {self.grading_scale}/100 minimum C-")
 
     def set_optional_var(self, professor, difficulty, scale):
         self.professor_name = professor
@@ -51,7 +56,6 @@ class Course:
         filename.write(f"{self.professor_name}\n")
         filename.write(f"{self.professor_difficulty}\n")
         filename.write(f"{self.grading_scale}\n")
-
 
 
 class Semester:
@@ -100,7 +104,8 @@ def read_user_input():
         course_credits = input("Enter number of credit hours: ")
         course_difficulty = input(
             "Enter projected course difficulty (1-100): ")
-        course_confidence = input("How well do you know the material? (1-100): ")
+        course_confidence = input(
+            "How well do you know the material? (1-100): ")
         course = Course(course_name, course_credits, course_difficulty,
                         course_confidence)
         course_list.append(course)
@@ -108,7 +113,8 @@ def read_user_input():
             "Would you like to add more info for a better calculation? (y/n): ")
         if more_info == "y":
             professor_name = input("Enter professor\'s name: ")
-            professor_difficulty = input("Enter professors\'s difficulty (1-5): ")
+            professor_difficulty = input(
+                "Enter professors\'s difficulty (1-5): ")
             passing_grade = input("Enter minimum grade for C-: ")
             course.set_optional_var(professor_name, professor_difficulty,
                                     passing_grade)
@@ -119,18 +125,22 @@ def read_user_input():
     print("Data successfully saved")
     return semester
 
+
 def read_file_input(filename):
     semester_name = filename.readline()
-    fileIn = filename.readline()
+    fileIn = filename.readline().strip('\n')
     course_list = []
     while fileIn != "END":
-        if fileIn == "STUDENT\n":
-            given_student = Student(filename.readline(), filename.readline())
-        elif fileIn == "COURSE\n":
-            given_course = Course(filename.readline(), filename.readline(), filename.readline(), filename.readline())
-            given_course.set_optional_var(filename.readline(), filename.readline(), filename.readline())
+        if fileIn == "STUDENT":
+            given_student = Student(filename.readline().strip('\n'), filename.readline().strip('\n'))
+        elif fileIn == "COURSE":
+            given_course = Course(filename.readline().strip('\n'), filename.readline().strip('\n'),
+                                  filename.readline().strip('\n'), filename.readline().strip('\n'))
+            given_course.set_optional_var(filename.readline().strip('\n'),
+                                          filename.readline().strip('\n'),
+                                          filename.readline().strip('\n'))
             course_list.append(given_course)
-        fileIn = filename.readline()
+        fileIn = filename.readline().strip('\n')
     semester = Semester(semester_name, given_student, course_list)
     return semester
 
@@ -151,12 +161,13 @@ def write_to_file(file):
     # TODO the projects/exams section
     file.write("END")
 
+
 def file_io():
     file = open("semester_info.txt", "r+")
     fileIn = file.readline()
     if fileIn == "BEGIN\n":
         semester = read_file_input(file)
-        print(f'Hello, {semester.student.username}'
+        print(f'Hello, {semester.student.username}. '
               f'Select an option from the list below:')
         option_switch = input(f"a: Print this weeks schedule\n"
                               f"b: Print student information\nc: Print all "
@@ -176,10 +187,11 @@ def file_io():
                     "This will permanently overwrite all saved information, are you sure? (y/n)\n")
                 if confirmation == "y":
                     print("Not working yet!")
-                    #semester_input = read_user_input()
+                    # semester_input = read_user_input()
                     break
             elif option_switch == "e":
-                confirmation = input("This will permanently remove all saved information, are you sure? (y/n)\n")
+                confirmation = input(
+                    "This will permanently remove all saved information, are you sure? (y/n)\n")
                 if confirmation == "y":
                     os.remove("semester_info.txt")
                     break
