@@ -39,9 +39,10 @@ class Course:
         print(
             f"{self.course_name}: {self.course_credits} credits; {self.course_difficulty}/100 difficulty; {self.confidence}/100 confidence",
             end="")
-        if self.professor_name is not None:
+        if self.professor_name != 'None':
             print(
-                f"; Professor {self.professor_name}; {self.professor_difficulty}/5 professor difficulty; {self.grading_scale}/100 minimum C-")
+                f"; Professor {self.professor_name}; {self.professor_difficulty}/5 professor difficulty; {self.grading_scale}/100 minimum C-", end="")
+        print()
 
     def set_optional_var(self, professor, difficulty, scale):
         self.professor_name = professor
